@@ -1,26 +1,63 @@
 # AI Trust Observatory
 
-基于 Stack Overflow 2025 开发者调查的纯前端仪表板。Vite 构建 React 和 TypeScript 页面，ECharts 绘制交互图。页面按调查概况、工具与工作流程、信任与影响组织 13 张图，支持组合筛选、悬停提示和展开数据表。[调查原始报告](https://survey.stackoverflow.co/2025/)
+**在线访问：[AI Trust Observatory · GitHub Pages](https://maretu01.github.io/ai-trust-dashboard/)**
 
-## 本地运行
+## 项目背景
 
-在项目目录中使用 Node 和 npm。
+本项目是 **IBA6317 / FIN6138 课程小组作业**，基于 Stack Overflow 2025 年开发者调查，通过交互式数据可视化探索开发者对 AI 工具的使用、信任及其对工作流程的影响。
+
+仪表板围绕调查概况、工具与工作流程、信任与影响组织 13 张图，支持组合筛选、悬停提示、展开数据表和中英文切换。项目采用 React、TypeScript、Vite 和 ECharts，作为纯前端网页运行。
+
+## 启动方式
+
+### 本地开发
+
+准备 Node.js 26 和 npm，然后执行：
 
 ```powershell
+git clone https://github.com/MARETU01/ai-trust-dashboard.git
+cd ai-trust-dashboard
 npm ci
 npm run dev
 ```
 
-## 构建
+启动后打开 http://localhost:6138 。如果已经下载了项目，直接在项目根目录运行 `npm ci` 和 `npm run dev` 即可。
+
+仓库已包含运行所需的 `data/data.csv`，无需另外下载原始调查数据。启动时会自动生成网页使用的汇总和压缩数据。
+
+### Docker 启动
+
+安装并启动 [Docker Desktop](https://docs.docker.com/desktop/setup/install/windows-install/)，使用 Linux containers。在项目根目录执行：
+
+```powershell
+docker build -t maretu01/ai-trust-dashboard:local .
+docker run -d --name ai-trust-dashboard -p 8080:80 --restart unless-stopped maretu01/ai-trust-dashboard:local
+```
+
+访问 http://localhost:8080 。查看日志使用 `docker logs ai-trust-dashboard`，停止并移除容器使用 `docker rm -f ai-trust-dashboard`。
+
+如需直接使用 Docker Hub 已发布的镜像，参见下方的[在服务器运行与更新](#在服务器运行与更新)。
+
+### 生产构建与预览
 
 ```powershell
 npm run build
 npm run preview
 ```
 
-生产构建会运行 TypeScript 严格检查。也可以单独运行 `npm run typecheck` 检查类型。
+打开终端显示的预览地址，默认是 http://localhost:4173 。生产构建会运行 TypeScript 严格检查，也可以单独运行 `npm run typecheck` 检查类型。
 
 `dist/` 是可直接托管的静态产物，包含网页、图表资源和精简数据。构建使用相对资源路径，可部署到 GitHub Pages 的仓库子目录。[Vite 静态部署说明](https://vite.dev/guide/static-deploy.html)
+
+## 数据来源
+
+本项目使用 **Stack Overflow Developer Survey 2025（Stack Overflow 2025 年开发者调查）**，原始调查及数据由 **Stack Overflow** 发布。
+
+- [官方调查报告](https://survey.stackoverflow.co/2025/)：调查结果、问题说明和研究方法。
+- [官方 2025 年数据归档](https://github.com/StackExchange/Survey/tree/main/packages/archive/2025)：原始调查数据及相关文件，入口见 [Stack Overflow 调查主页](https://survey.stackoverflow.co/)。
+- [项目使用的数据](data/data.csv)：从原始调查数据中选取相关字段并整理得到，用于本仪表板的统计与筛选。
+
+数据处理脚本为 [`script/prepare_data.py`](script/prepare_data.py)，包含字段选取、缺失值处理、分类编码和任务状态整理。网页展示的比例与统计由本项目根据有效回答重新计算，具体筛选与统计口径见下方的[数据与筛选](#数据与筛选)。
 
 ## GitHub Pages 部署
 
@@ -35,17 +72,6 @@ npm run preview
 ## Docker 镜像与 Docker Hub
 
 镜像名为 `maretu01/ai-trust-dashboard`。`Dockerfile` 使用 Node.js 26 构建网页，再将 `dist/` 复制到 Nginx 镜像中，由容器的 80 端口提供网站。构建需要项目中的 `data/data.csv`，无需提前运行 npm 或提交 `dist/`。
-
-### 本地构建和运行
-
-先安装并启动 [Docker Desktop](https://docs.docker.com/desktop/setup/install/windows-install/)，使用 Linux containers。在项目根目录执行：
-
-```powershell
-docker build -t maretu01/ai-trust-dashboard:latest .
-docker run -d --name ai-trust-dashboard -p 8080:80 --restart unless-stopped maretu01/ai-trust-dashboard:latest
-```
-
-访问 http://localhost:8080 ，检查页面和筛选功能。查看日志使用 `docker logs ai-trust-dashboard`，停止并移除容器使用 `docker rm -f ai-trust-dashboard`。
 
 ### 首次配置 Docker Hub 自动发布
 
@@ -126,4 +152,10 @@ node .github/scripts/docker-smoke.mjs ai-trust-dashboard:ci
 
 语言、数据库和社区平台沿用全样本 Top 10，筛选后重新计算该人群的比例。模型桑基图按受访者对模型组的共选关系计数。两张任务图都使用每项任务自己的有效回答人数。
 
-如需从原始 CSV 重新生成精简数据，请运行 `python .\script\prepare_data.py`。源文件可以通过 `--input` 指定。更新数据后重新启动开发服务器或重新构建。
+如需从原始 CSV 重新生成精简数据，请准备 Python 3，并指定原始文件路径：
+
+```powershell
+python script/prepare_data.py --input "path/to/source.csv"
+```
+
+输出默认写入 `data/data.csv`。更新数据后重新启动开发服务器或重新构建。日常启动项目无需运行此 Python 脚本。
