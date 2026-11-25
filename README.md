@@ -1,161 +1,50 @@
 # AI Trust Observatory
 
-**在线访问：[AI Trust Observatory · GitHub Pages](https://maretu01.github.io/ai-trust-dashboard/)**
+**在线访问：[GitHub Pages](https://maretu01.github.io/ai-trust-dashboard/)**
 
-## 项目背景
+本项目是 **IBA6317 / FIN6138 课程小组作业**，基于 Stack Overflow 2025 年开发者调查，通过交互式仪表板探索开发者如何使用和信任 AI，以及 AI 对开发工作流程的影响。
 
-本项目是 **IBA6317 / FIN6138 课程小组作业**，基于 Stack Overflow 2025 年开发者调查，通过交互式数据可视化探索开发者对 AI 工具的使用、信任及其对工作流程的影响。
+## 看板概览
 
-仪表板围绕调查概况、工具与工作流程、信任与影响组织 13 张图，支持组合筛选、悬停提示、展开数据表和中英文切换。项目采用 React、TypeScript、Vite 和 ECharts，作为纯前端网页运行。
+看板包含 13 张图，围绕三个主题展开：
 
-## 启动方式
+- **调查概况**：受访者年龄、AI 使用频率，以及不同年龄和工作经验人群的 AI 信任与学习情况。
+- **工具与工作流程**：编程语言、数据库、社区平台、AI 模型，以及 AI 在开发任务中的使用情况。
+- **信任与影响**：对 AI 准确性、复杂任务处理能力及就业影响的看法。
 
-### 本地开发
+支持国家或地区、年龄、编程学习状态、开发者角色和 AI 使用频率的组合筛选，以及悬停提示、数据表查看和中英文切换。
 
-准备 Node.js 26 和 npm，然后执行：
+技术栈：React、TypeScript、Vite、ECharts；网页中的数据筛选和图表交互在浏览器中完成。
 
-```powershell
+## 安装和运行
+
+### 本地运行
+
+需要 Node.js 26 和 npm。
+
+```bash
 git clone https://github.com/MARETU01/ai-trust-dashboard.git
 cd ai-trust-dashboard
 npm ci
 npm run dev
 ```
 
-启动后打开 http://localhost:6138 。如果已经下载了项目，直接在项目根目录运行 `npm ci` 和 `npm run dev` 即可。
+访问 http://localhost:6138 。仓库已包含运行所需的数据，启动时会自动生成汇总和压缩数据。
 
-仓库已包含运行所需的 `data/data.csv`，无需另外下载原始调查数据。启动时会自动生成网页使用的汇总和压缩数据。
+### 构建与预览
 
-### Docker 启动
-
-安装并启动 [Docker Desktop](https://docs.docker.com/desktop/setup/install/windows-install/)，使用 Linux containers。在项目根目录执行：
-
-```powershell
-docker build -t maretu01/ai-trust-dashboard:local .
-docker run -d --name ai-trust-dashboard -p 8080:80 --restart unless-stopped maretu01/ai-trust-dashboard:local
-```
-
-访问 http://localhost:8080 。查看日志使用 `docker logs ai-trust-dashboard`，停止并移除容器使用 `docker rm -f ai-trust-dashboard`。
-
-如需直接使用 Docker Hub 已发布的镜像，参见下方的[在服务器运行与更新](#在服务器运行与更新)。
-
-### 生产构建与预览
-
-```powershell
+```bash
 npm run build
 npm run preview
 ```
 
-打开终端显示的预览地址，默认是 http://localhost:4173 。生产构建会运行 TypeScript 严格检查，也可以单独运行 `npm run typecheck` 检查类型。
-
-`dist/` 是可直接托管的静态产物，包含网页、图表资源和精简数据。构建使用相对资源路径，可部署到 GitHub Pages 的仓库子目录。[Vite 静态部署说明](https://vite.dev/guide/static-deploy.html)
+构建产物位于 `dist/`，预览地址默认为 http://localhost:4173 。
 
 ## 数据来源
 
-本项目使用 **Stack Overflow Developer Survey 2025（Stack Overflow 2025 年开发者调查）**，原始调查及数据由 **Stack Overflow** 发布。
+数据来自 **Stack Overflow Developer Survey 2025**，由 Stack Overflow 发布。
 
-- [官方调查报告](https://survey.stackoverflow.co/2025/)：调查结果、问题说明和研究方法。
-- [官方 2025 年数据归档](https://github.com/StackExchange/Survey/tree/main/packages/archive/2025)：原始调查数据及相关文件，入口见 [Stack Overflow 调查主页](https://survey.stackoverflow.co/)。
-- [项目使用的数据](data/data.csv)：从原始调查数据中选取相关字段并整理得到，用于本仪表板的统计与筛选。
+- [官方调查报告](https://survey.stackoverflow.co/2025/)
+- [官方 2025 年数据归档](https://github.com/StackExchange/Survey/tree/main/packages/archive/2025)
 
-数据处理脚本为 [`script/prepare_data.py`](script/prepare_data.py)，包含字段选取、缺失值处理、分类编码和任务状态整理。网页展示的比例与统计由本项目根据有效回答重新计算，具体筛选与统计口径见下方的[数据与筛选](#数据与筛选)。
-
-## GitHub Pages 部署
-
-已配置 `.github/workflows/deploy.yml`，使用 Node.js 26 安装依赖、构建并部署 `dist/`。
-
-1. 在 GitHub 仓库的 **Settings → Pages → Build and deployment** 中，将 **Source** 设为 **GitHub Actions**。
-2. 将项目源码、`package-lock.json`、`data/data.csv` 和 `.github/workflows/deploy.yml` 一起提交并推送到 `main` 分支。构建会自动生成 `src/generated/`，无需提交生成目录或 `dist/`。
-3. 在仓库 **Actions** 页面查看 **Deploy to GitHub Pages** 的执行结果。也可以通过 **Run workflow** 手动部署。
-
-部署成功后访问：https://maretu01.github.io/ai-trust-dashboard/ 。此后每次推送到 `main` 都会自动更新网站。
-
-## Docker 镜像与 Docker Hub
-
-镜像名为 `maretu01/ai-trust-dashboard`。`Dockerfile` 使用 Node.js 26 构建网页，再将 `dist/` 复制到 Nginx 镜像中，由容器的 80 端口提供网站。构建需要项目中的 `data/data.csv`，无需提前运行 npm 或提交 `dist/`。
-
-### 首次配置 Docker Hub 自动发布
-
-1. 打开 [Docker Hub 仓库列表](https://hub.docker.com/repositories/maretu01)，选择 **Create repository**，Namespace 选 `maretu01`，仓库名填 `ai-trust-dashboard`。如需允许他人直接拉取，Visibility 选 **Public**。
-2. 在 Docker 账户的 **Account settings → Personal access tokens → Generate new token** 创建具有仓库读取、写入权限的 Token。保存 Token，不要写入项目文件。参见 [Docker Token 官方说明](https://docs.docker.com/security/access-tokens/personal-access-tokens/)。
-3. 打开 GitHub 仓库 **Settings → Secrets and variables → Actions → New repository secret**，名称填 `DOCKERHUB_TOKEN`，值填上一步的 Token。工作流已固定用户名为 `maretu01`，不需要额外配置用户名。
-4. 将项目源码、`data/data.csv`、`package-lock.json`、`Dockerfile`、`.dockerignore`、`docker/nginx.conf` 和整个 `.github/` 一起提交并推送到 `main`。然后按下方步骤推送版本 tag，在 **Actions → Publish Docker image** 查看验证、构建和发布结果。
-
-构建由 GitHub 执行，使用此方式发布时本机无需安装 Docker。流程采用 [Docker 官方 GitHub Actions](https://docs.docker.com/build/ci/github-actions/)。
-
-Docker 工作流参考 `gothrough` 的版本发布流程，仅在推送 `v*` tag 时触发；普通分支推送不会制作 Docker 镜像，也没有手动构建入口。GitHub Pages 仍在推送到 `main` 时更新。
-
-发布前会校验 tag 格式、确认该提交已在远程 `main` 历史中，并运行标签规则测试。随后构建 amd64 测试镜像，启动容器检查首页、JS/CSS、Worker 和 gzip 调查数据；通过后才登录 Docker Hub 发布 `linux/amd64` 和 `linux/arm64` 镜像。两个阶段共用构建缓存，发布任务排队执行。
-
-标签规则如下（版本标签保留 `v` 前缀，SHA 使用完整提交哈希）：
-
-| 操作 | 镜像标签 |
-| --- | --- |
-| 推送当前最高正式版，例如 `v1.0.0` | `v1.0.0`、`sha-<完整提交哈希>`、`latest` |
-| 补发较旧正式版，例如已有 `v2.0.0` 后发布 `v1.0.1` | `v1.0.1`、`sha-<完整提交哈希>`，不更新 `latest` |
-| 推送预发布版，例如 `v1.1.0-beta.1` | `v1.1.0-beta.1`、`sha-<完整提交哈希>`，不更新 `latest` |
-
-版本格式为 `v主版本.次版本.修订号`，可带 `-beta.1`、`-rc.1` 等预发布标识。不接受数字前导零、`+build` 元数据或超过 Docker 128 字符限制的版本 tag。
-
-发布版本示例（先提交本次所有改动，再执行）：
-
-```powershell
-git switch main
-git pull --ff-only origin main
-git push origin main
-git tag -a v1.0.0 -m "Release v1.0.0"
-git push origin v1.0.0
-```
-
-预发布时将示例中的 `v1.0.0` 换成 `v1.1.0-beta.1`。仅在本地创建 tag 不会触发 CI，需要推送 tag。修复已发布版本应使用新版本号。
-
-`latest` 按仓库内有效正式版 Git tag 的版本号比较决定，不按 tag 创建时间或 Docker Hub 发布记录决定。如果最高版本发布失败，应修复后在 Actions 里重新执行该版本的工作流；旧版本补发仍不会更新 `latest`。新规则只适用于包含本次工作流和脚本的提交。
-
-发布成功后可在 [Docker Hub 镜像页面](https://hub.docker.com/r/maretu01/ai-trust-dashboard/tags) 查看标签。
-
-### 在服务器运行与更新
-
-服务器安装 Docker 后执行；私有镜像需要先用 `docker login --username maretu01` 登录：
-
-```powershell
-docker pull maretu01/ai-trust-dashboard:latest
-docker run -d --name ai-trust-dashboard -p 8080:80 --restart unless-stopped maretu01/ai-trust-dashboard:latest
-```
-
-访问 `http://服务器IP:8080`，并在服务器防火墙或云安全组放行 TCP 8080。新镜像发布后，已有容器需要重新创建才会使用新版：
-
-```powershell
-docker pull maretu01/ai-trust-dashboard:latest
-docker stop ai-trust-dashboard
-docker rm ai-trust-dashboard
-docker run -d --name ai-trust-dashboard -p 8080:80 --restart unless-stopped maretu01/ai-trust-dashboard:latest
-```
-
-如需部署固定版本，将命令中的 `latest` 替换为 `v1.0.0` 等版本标签。只有预发布镜像时，请直接使用预发布标签，此时可能还没有 `latest`。
-
-### 本地验证发布脚本
-
-使用项目的 Node.js 26，无需额外安装测试依赖：
-
-```powershell
-node --test .github/scripts/image-tags.test.mjs
-docker build -t ai-trust-dashboard:ci .
-node .github/scripts/docker-smoke.mjs ai-trust-dashboard:ci
-```
-
-容器检查需要本机 Docker 正在运行。本机 `docker build` 默认只构建当前架构，自动工作流会同时发布 amd64 和 arm64；发布前的容器启动检查只验证 amd64。
-
-## 数据与筛选
-
-`npm run dev` 和 `npm run build` 都会从 `data/data.csv` 生成全样本汇总和 gzip 压缩数据。网页用汇总显示默认结果，图表接近视口时才绘制。首次应用筛选时，Web Worker 加载压缩数据并重新计算各图。顶部筛选栏包括国家或地区、年龄、编程学习状态、开发者角色和 AI 使用频率。原问卷没有性别字段。
-
-三段正文按参考图排列 12 张图。第 0 张受访者年龄分布图可在方法说明下展开。
-
-语言、数据库和社区平台沿用全样本 Top 10，筛选后重新计算该人群的比例。模型桑基图按受访者对模型组的共选关系计数。两张任务图都使用每项任务自己的有效回答人数。
-
-如需从原始 CSV 重新生成精简数据，请准备 Python 3，并指定原始文件路径：
-
-```powershell
-python script/prepare_data.py --input "path/to/source.csv"
-```
-
-输出默认写入 `data/data.csv`。更新数据后重新启动开发服务器或重新构建。日常启动项目无需运行此 Python 脚本。
+项目使用的数据保存在 [`data/data.csv`](data/data.csv)，由 [`script/prepare_data.py`](script/prepare_data.py) 选取字段、处理缺失值并整理分类。各图基于筛选后的有效回答计算统计结果；多选题的比例之和可能超过 100%。
