@@ -18,6 +18,28 @@
 
 ## 安装和运行
 
+### Docker 镜像部署
+
+安装并启动 Docker，使用 Linux 容器，然后拉取 [Docker Hub 镜像](https://hub.docker.com/r/maretu01/ai-trust-dashboard)：
+
+```bash
+docker pull maretu01/ai-trust-dashboard:latest
+docker run -d --name ai-trust-dashboard -p 8080:80 --restart unless-stopped maretu01/ai-trust-dashboard:latest
+```
+
+本机访问 http://localhost:8080 ；其他设备访问 `http://服务器IP:8080`，服务器需放行 TCP 8080 端口。可修改 `-p 8080:80` 左侧的端口号。
+
+镜像包含网页和数据，部署机器只需 Docker。若需固定版本，将命令中的 `latest` 换成 `v0.2.0` 等版本标签。
+
+更新时先拉取新版镜像，再重新创建容器：
+
+```bash
+docker pull maretu01/ai-trust-dashboard:latest
+docker stop ai-trust-dashboard
+docker rm ai-trust-dashboard
+docker run -d --name ai-trust-dashboard -p 8080:80 --restart unless-stopped maretu01/ai-trust-dashboard:latest
+```
+
 ### 本地运行
 
 需要 Node.js 26 和 npm。
