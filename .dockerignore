@@ -1,0 +1,12 @@
+.git
+.github
+node_modules
+dist
+src/generated
+tableau_fig
+data/*
+!data/data.csv
+.env
+.env.*
+*.log
+README.md
