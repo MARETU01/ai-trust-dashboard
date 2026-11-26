@@ -15,15 +15,22 @@ export function technologyRankings(data: SurveyStats['languages'], t: Translate,
     n, table: itemTable(t, dots ? 'Database' : 'Language', names, values, values.map(() => n)),
     option: chart({
       grid: { top: 6, right: 51, bottom: 29, left: dots ? 126 : 81 },
-      xAxis: valueAxis(scale), yAxis: categoryAxis(names, { inverse: true, axisLine: { show: false }, tooltip: axisTooltip }),
+      xAxis: valueAxis(scale, { interval: 10 }), yAxis: categoryAxis(names, { inverse: true, axisLine: { show: false }, tooltip: axisTooltip }),
       tooltip,
       series: [{
         type: dots ? 'scatter' : 'bar',
-        data: dots ? percentages.map((value, i) => [value, i]) : percentages,
+        data: dots ? percentages.map((value, i) => ({ value: [value, i], label: { position: i === 0 ? 'left' as const : 'right' as const } })) : percentages,
         itemStyle: { color: dots ? palette.databases : palette.languages, opacity: 1, borderRadius: 0 },
-        symbol: 'circle', symbolSize: dots ? (point) => 26 * Math.sqrt(Math.max(0, point[0] ?? 0) / scale) : 13, barMaxWidth: 15,
-        label: { show: true, position: 'right', formatter: ({ dataIndex }) => percent(percentages[dataIndex]), color: palette.muted, fontSize: 11 },
+        symbol: 'circle', symbolSize: dots ? (point) => 26 * Math.sqrt(Math.max(0, point[0] ?? 0) / scale) : 13, barMaxWidth: 19,
+        label: { show: true, position: 'right', formatter: ({ dataIndex }) => percent(percentages[dataIndex]), color: palette.ink, fontSize: 12 },
       }],
+      media: [{ query: { minWidth: 800 }, option: {
+        grid: { left: dots ? 210 : 110, right: 80, bottom: 40 },
+        xAxis: { interval: 5, axisLabel: { fontSize: 14, formatter: (value: number) => `${value.toFixed(1)}%` } },
+        yAxis: { axisLabel: { fontSize: 16 } },
+        series: [{ type: dots ? 'scatter' : 'bar', symbolSize: dots ? (point: number[]) => 50 * Math.sqrt(Math.max(0, point[0]) / scale) : 13,
+          label: { fontSize: 18 } }],
+      } }],
     }),
   };
 }

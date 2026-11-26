@@ -2,7 +2,7 @@ import { TASKS, TASK_STATES, count, percent, share, type SurveyStats } from '../
 import { translations, type Translate } from '../i18n.ts';
 import type { ChartView, TooltipLine } from '../chart-types.ts';
 import { chartFont, palette } from '../chart-theme.ts';
-import { valueAndN, tip, chart, lineAxis, valueAxis, categoryAxis, categoryHover, itemTable, matrixTable, colorLegend } from './shared.ts';
+import { valueAndN, tip, chart, valueAxis, categoryAxis, categoryHover, matrixTable, colorLegend } from './shared.ts';
 
 export function tasksStack({ tasks }: SurveyStats, t: Translate): ChartView {
   const orderedTasks = tasks.map((task, i) => ({
@@ -21,7 +21,7 @@ export function tasksStack({ tasks }: SurveyStats, t: Translate): ChartView {
   return {
     empty: !tasks.some(({ n }) => n),
     sample: taskSample(t, totals),
-    legend: colorLegend(t, TASK_STATES, palette.tasks),
+    legend: colorLegend(t, TASK_STATES, palette.tasks).reverse(),
     highlightChoices,
     table: {
       headers: [...table.headers, t('Valid responses')],
@@ -35,9 +35,14 @@ export function tasksStack({ tasks }: SurveyStats, t: Translate): ChartView {
         type: 'bar', name: t(name), selectionGroup: name, stack: 'status', barMaxWidth: 19,
         itemStyle: { color: palette.tasks[i] },
         data: orderedTasks.map(({ n, counts }) => share(counts[i], n)),
-        label: { show: true, position: 'inside', color: palette.ink, fontFamily: chartFont, fontSize: 12, fontWeight: 400,
+        label: { show: true, position: 'inside', color: '#555555', fontFamily: chartFont, fontSize: 12, fontWeight: 400,
           formatter: ({ value }) => typeof value === 'number' && value >= 15 ? percent(value) : '' },
       })),
+      media: [{ query: { minWidth: 800 }, option: {
+        grid: { left: t === translations.en ? 310 : 140 },
+        xAxis: { axisLabel: { fontSize: 14 } }, yAxis: { axisLabel: { fontSize: 16 } },
+        series: TASK_STATES.map(() => ({ type: 'bar', barMaxWidth: 32, label: { fontSize: 18 } })),
+      } }],
     }),
   };
 }
@@ -46,37 +51,4 @@ function taskSample(t: Translate, totals: number[]) {
   const low = Math.min(...totals);
   const high = Math.max(...totals);
   return t('Valid n by task · {range}', { range: `${count(low)}${low === high ? '' : `–${count(high)}`}` });
-}
-
-export function usageRose({ tasks }: SurveyStats, t: Translate): ChartView {
-  const order = tasks.map(({ n, counts }, i) => ({
-    id: TASKS[i][0], name: t(TASKS[i][1]), label: t(TASKS[i][2]), n, current: counts[0] + counts[1],
-  })).sort((a, b) => (share(b.current, b.n) ?? -1) - (share(a.current, a.n) ?? -1));
-  const labels = order.map(({ label }) => label);
-  const { tooltip, axisTooltip } = categoryHover(labels, (i) => {
-    const { name, n, current } = order[i];
-    return tip(t, name, [['Currently using AI', percent(share(current, n))], ['Valid task responses', count(n)]]);
-  }, 'angle');
-  return {
-    empty: !order.some(({ n }) => n),
-    sample: taskSample(t, order.map(({ n }) => n)),
-    table: itemTable(t, 'Task', order.map(({ name }) => name), order.map(({ current }) => current), order.map(({ n }) => n)),
-    option: chart({
-      polar: { radius: '65%', center: ['50%', '51%'] },
-      angleAxis: {
-        type: 'category', data: labels, startAngle: 90, tooltip: axisTooltip,
-        axisLabel: { color: palette.muted, fontSize: 11, interval: 0, margin: 12 },
-        axisTick: { show: false }, axisLine: { show: false }, splitLine: { show: true, lineStyle: { color: palette.grid } },
-      },
-      radiusAxis: {
-        type: 'value', min: 0, max: 100, interval: 25, axisLine: { show: false }, axisTick: { show: false },
-        axisLabel: { show: false }, splitLine: lineAxis,
-      },
-      tooltip,
-      series: [{
-        type: 'bar', coordinateSystem: 'polar', roundCap: false,
-        data: order.map(({ id, n, current }) => ({ id, value: share(current, n), itemStyle: { color: palette.taskUsage[id], opacity: 1 } })),
-      }],
-    }),
-  };
 }

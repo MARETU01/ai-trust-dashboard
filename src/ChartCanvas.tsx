@@ -1,14 +1,14 @@
 import { useEffect, useLayoutEffect, useRef } from 'react';
 import { init, use, type ECElementEvent, type EChartsType, type ElementEvent } from 'echarts/core';
 import { BarChart, CustomChart, LineChart, PieChart, SankeyChart, ScatterChart } from 'echarts/charts';
-import { GraphicComponent, GridComponent, PolarComponent, TooltipComponent } from 'echarts/components';
+import { GraphicComponent, GridComponent, MarkLineComponent, TooltipComponent } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
 import { viewportTooltipPosition } from './tooltip.ts';
 import type { ChartOption, ChartSeries, ChartTooltip } from './chart-types.ts';
 
 use([
   BarChart, CustomChart, LineChart, PieChart, SankeyChart, ScatterChart,
-  GraphicComponent, GridComponent, PolarComponent, TooltipComponent, CanvasRenderer,
+  GraphicComponent, GridComponent, MarkLineComponent, TooltipComponent, CanvasRenderer,
 ]);
 
 type ChartCanvasProps = {

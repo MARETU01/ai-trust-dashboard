@@ -38,7 +38,7 @@ export const sections: Section[] = [
       { id: 'complex', title: 'How well does AI handle complex tasks?', subtitle: 'Ratings within each group of current AI users.', minimum: 320 },
       { id: 'sentiment', title: 'Does a favorable view of AI mean trust?', subtitle: 'Trust and distrust of AI accuracy within each attitude group.', minimum: 350 },
       { id: 'threat', title: 'Who sees AI as a job threat?', subtitle: 'Job-threat perceptions by age group.', minimum: 350, note: 'Bubble size represents the number of respondents in each category.' },
-      { id: 'taskUsage', title: 'Where is current AI use highest?', subtitle: 'Share of respondents already using AI for each development task.', minimum: 365, note: 'Current use combines partial and mostly AI use. The outer ring represents 100%.' },
+      { id: 'taskUsage', title: 'Where is current AI use highest?', subtitle: 'Current AI use by task among professional developers who use AI tools.', minimum: 580, note: 'Includes daily, weekly and infrequent AI users. Current use combines partial and mostly AI use, divided by each task’s valid responses. Sector area represents current-use share.' },
     ],
   },
 ];

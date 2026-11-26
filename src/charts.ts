@@ -4,7 +4,8 @@ import type { ChartView } from './chart-types.ts';
 import { ageDistribution, adoption, trustAcrossAge, experienceLearning } from './charts/demographics.ts';
 import { technologyRankings, communityUse } from './charts/technology.ts';
 import { modelSankey } from './charts/models.ts';
-import { tasksStack, usageRose } from './charts/tasks.ts';
+import { tasksStack } from './charts/tasks.ts';
+import { usageRose } from './charts/task-usage.ts';
 import { complexTasks, sentimentDumbbell, ageThreat } from './charts/perceptions.ts';
 
 export { modelHighlightGroups, modelLinksGroup } from './charts/models.ts';

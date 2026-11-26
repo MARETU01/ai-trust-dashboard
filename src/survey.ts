@@ -79,7 +79,7 @@ export type SurveyStats = ReturnType<typeof summarize>;
 export type SurveySummary = { filters: Survey['filters']; stats: SurveyStats };
 
 export const surveyFields = [
-  'country', 'age_group', 'code_learning_status', 'ai_use_group', 'developer_roles',
+  'country', 'age_group', 'developer_status', 'code_learning_status', 'ai_use_group', 'developer_roles',
   'work_experience_years', 'ai_learning', 'ai_trust', 'ai_sentiment', 'ai_complex_task_rating',
   'ai_job_threat', 'languages_used', 'databases_used', 'community_platforms_used',
   'ai_models_used', 'ai_models_wanted', ...TASKS.map(([field]) => field),
@@ -125,6 +125,7 @@ export function createSurvey(rawRows: readonly SurveyCsvRow[]) {
   const rows = rawRows.map((row) => ({
     country: row.country,
     age: row.age_group,
+    developerStatus: row.developer_status,
     codeLearning: row.code_learning_status,
     aiUse: row.ai_use_group,
     roles: selections(row.developer_roles),
@@ -221,6 +222,7 @@ export function summarize(survey: Survey, filters: Partial<SurveyFilters> = {}) 
   const community = usage.map((key) => itemsFor(rows.filter((row) => row.aiUse === key), 'platforms', survey.rankings.platforms));
   const modelPairs = matrix(MODELS.length, MODELS.length);
   const tasks = TASKS.map(() => ({ n: 0, counts: zeros(TASK_STATES.length) }));
+  const taskUsage = TASKS.map(() => ({ n: 0, counts: zeros(TASK_STATES.length) }));
   let modelN = 0;
   let aiN = 0;
   let users = 0;
@@ -250,10 +252,16 @@ export function summarize(survey: Survey, filters: Partial<SurveyFilters> = {}) 
       group.n += 1;
       if (row.learning.startsWith('yes_')) group.yes += 1;
     }
+    // Figure 12 uses professional developers who currently use AI tools.
+    const eligibleForTaskUsage = row.developerStatus === 'professional_developer' && currentUsers.has(row.aiUse);
     row.tasks.forEach((state, taskIndex) => {
       if (state >= 1 && state <= TASK_STATES.length) {
         tasks[taskIndex].n += 1;
         tasks[taskIndex].counts[state - 1] += 1;
+        if (eligibleForTaskUsage) {
+          taskUsage[taskIndex].n += 1;
+          taskUsage[taskIndex].counts[state - 1] += 1;
+        }
       }
     });
   }
@@ -263,6 +271,6 @@ export function summarize(survey: Survey, filters: Partial<SurveyFilters> = {}) 
     demographics, adoption, ageTrust, learning, complexity, sentimentTrust, jobThreat, community,
     languages: itemsFor(rows, 'languages', survey.rankings.languages),
     databases: itemsFor(rows, 'databases', survey.rankings.databases),
-    modelPairs, modelN, tasks,
+    modelPairs, modelN, tasks, taskUsage,
   };
 }

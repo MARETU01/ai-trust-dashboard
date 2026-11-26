@@ -45,7 +45,7 @@ export type MarkDatum = {
   value: MarkValue;
   markId?: string;
   itemStyle?: NonNullable<BarSeriesOption['itemStyle']>;
-  label?: { opacity?: number };
+  label?: { opacity?: number; position?: 'left' | 'right' };
 };
 
 type MarkSeries<Series extends { type?: string }> = Omit<Series, 'data' | 'symbolSize' | 'type'> & {

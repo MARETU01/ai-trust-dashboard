@@ -11,6 +11,7 @@ const modelNames: Readonly<Record<string, string>> = {
   'OpenAI GPT': 'OpenAI GPT (chatbot models)',
   'OpenAI Image': 'OpenAI Image models',
   'OpenAI Reasoning': 'OpenAI Reasoning models',
+  'Other models': 'Other Models',
 };
 
 export function modelSankey({ modelPairs, modelN }: SurveyStats, t: Translate): ChartView {
@@ -49,7 +50,7 @@ export function modelSankey({ modelPairs, modelN }: SurveyStats, t: Translate): 
         connected.add(link.source);
         connected.add(link.target);
       }
-      return { ...link, lineStyle: { opacity: selected.size ? (active ? 0.68 : 0.08) : 0.4 } };
+      return { ...link, lineStyle: { opacity: selected.size ? (active ? 0.68 : 0.08) : 0.5 } };
     });
     return [{
       type: 'sankey', left: 2, right: 2, top: 5, bottom: 7, draggable: false,
@@ -100,7 +101,7 @@ export function modelSankey({ modelPairs, modelN }: SurveyStats, t: Translate): 
       } },
       series: highlightSeries([]),
       media: [
-        { query: { minWidth: 800 }, option: { series: [{ type: 'sankey', nodeWidth: 280, label: { fontSize: 20, lineHeight: 26, width: 264 } }] } },
+        { query: { minWidth: 800 }, option: { series: [{ type: 'sankey', nodeWidth: 340, label: { fontSize: 20, lineHeight: 26, width: 324 } }] } },
         { option: { series: [{ type: 'sankey', nodeWidth: 132, label: { fontSize: 14, lineHeight: 18, width: 120 } }] } },
       ],
     }),
