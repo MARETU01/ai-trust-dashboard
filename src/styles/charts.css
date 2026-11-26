@@ -91,11 +91,14 @@
 .chart-body--adoption .plot-matrix th, .chart-body--learning .plot-matrix th { font-weight: 400; }
 .plot-matrix th:first-child { width: 105px; }
 .chart-body--adoption .plot-matrix th:first-child { width: 81px; }
-.chart-body--community .plot-matrix th:first-child { width: 85px; }
-.chart-body--community .plot-matrix thead th { overflow-wrap: anywhere; }
-.chart-body--community .plot-matrix { border-spacing: 1px; }
-.chart-body--community .plot-matrix th, .chart-body--community .plot-matrix td { font-size: .875rem; font-weight: 400; }
-.chart-body--community .plot-matrix td { border-radius: 0; }
+.chart-body--community .plot-matrix th:first-child { width: 132px; }
+.chart-body--community .plot-matrix thead th { overflow-wrap: normal; word-break: normal; text-wrap: balance; }
+.chart-body--community .plot-matrix { border-spacing: 1px; color: #333333; }
+.chart-body--community .plot-matrix th, .chart-body--community .plot-matrix td {
+  font-size: 1rem; font-weight: 400; line-height: 1.3;
+}
+.chart-body--community .plot-matrix tbody th { white-space: nowrap; padding-inline: 5px; }
+.chart-body--community .plot-matrix td { position: relative; border-radius: 0; color: #333333; }
 .plot-matrix thead th { padding: 7px 2px; }
 .plot-matrix tbody th { padding: 3px 1px; text-align: left; font-size: var(--font-size-ui); }
 .plot-matrix td {
@@ -168,4 +171,8 @@ body:has(.chart-dialog[open]) { overflow: hidden; }
   font-size: clamp(.875rem, 1.25vw, 1.25rem); font-weight: 400;
 }
 .chart-dialog .plot-matrix th:first-child { width: clamp(100px, 15vw, 190px); }
+.chart-dialog .chart-body--community .plot-matrix th, .chart-dialog .chart-body--community .plot-matrix td {
+  font-size: clamp(1rem, 1.6vw, 1.5rem);
+}
+.chart-dialog .chart-body--community .plot-matrix th:first-child { width: clamp(132px, 15vw, 200px); }
 .chart-dialog .tooltip-content { max-width: min(340px, calc(100vw - 44px)); }
