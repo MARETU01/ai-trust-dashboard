@@ -1,14 +1,20 @@
 import { MODELS, count, type SurveyStats } from '../survey.ts';
 import type { Translate } from '../i18n.ts';
 import type { ChartSeries, ChartView } from '../chart-types.ts';
-import { contrastText, palette } from '../chart-theme.ts';
+import { chartFont, palette } from '../chart-theme.ts';
 import { tip, chart } from './shared.ts';
 
 export const modelHighlightGroups = ['Used in the past year', 'Wanted in the next year'];
 export const modelLinksGroup = 'Model links';
 
+const modelNames: Readonly<Record<string, string>> = {
+  'OpenAI GPT': 'OpenAI GPT (chatbot models)',
+  'OpenAI Image': 'OpenAI Image models',
+  'OpenAI Reasoning': 'OpenAI Reasoning models',
+};
+
 export function modelSankey({ modelPairs, modelN }: SurveyStats, t: Translate): ChartView {
-  const labels = MODELS.map(([, name]) => t(name));
+  const labels = MODELS.map(([, name]) => t(modelNames[name] ?? name));
   const links = modelPairs.flatMap((counts, source) => counts.flatMap((value, target) => value ? [{
     id: `link-${source}-${target}`, source: `used${source}`, target: `wanted${target}`,
     value, sourceIndex: source, targetIndex: target,
@@ -18,7 +24,7 @@ export function modelSankey({ modelPairs, modelN }: SurveyStats, t: Translate): 
     const value = values.reduce((sum, count) => sum + count, 0);
     return value ? [{
       name: `${prefix}${i}`, labelText: name, depth, value, itemStyle: { color: palette.models[i] },
-      label: { color: contrastText(palette.models[i]) },
+      label: { color: i < 2 ? palette.ink : palette.paper },
     }] : [];
   }));
   const highlightChoices = [
@@ -43,11 +49,11 @@ export function modelSankey({ modelPairs, modelN }: SurveyStats, t: Translate): 
         connected.add(link.source);
         connected.add(link.target);
       }
-      return { ...link, lineStyle: { opacity: selected.size ? (active ? 0.68 : 0.08) : 0.32 } };
+      return { ...link, lineStyle: { opacity: selected.size ? (active ? 0.68 : 0.08) : 0.4 } };
     });
     return [{
       type: 'sankey', left: 2, right: 2, top: 5, bottom: 7, draggable: false,
-      nodeAlign: 'justify', nodeGap: 8, nodeWidth: 88, layoutIterations: 0,
+      nodeAlign: 'justify', nodeGap: 0, nodeWidth: 132, layoutIterations: 0,
       data: data.map((node) => {
         const muted = selected.size > 0 && !connected.has(node.name);
         return {
@@ -64,7 +70,8 @@ export function modelSankey({ modelPairs, modelN }: SurveyStats, t: Translate): 
       lineStyle: { color: 'source', curveness: 0.48 },
       blur: { itemStyle: { opacity: 0.36 }, lineStyle: { opacity: 0.12 }, label: { opacity: fadedLabelOpacity } },
       label: { position: 'inside', formatter: ({ data }) => typeof data === 'object' && data && 'labelText' in data
-        ? String(data.labelText) : '', color: palette.ink, fontSize: 12, fontWeight: 600, width: 82, overflow: 'break' },
+        ? String(data.labelText) : '', color: palette.ink, fontFamily: chartFont, fontSize: 14, fontWeight: 400,
+        lineHeight: 18, width: 120, align: 'center', verticalAlign: 'middle', overflow: 'break' },
     }];
   }
   return {
@@ -92,6 +99,10 @@ export function modelSankey({ modelPairs, modelN }: SurveyStats, t: Translate): 
         return '';
       } },
       series: highlightSeries([]),
+      media: [
+        { query: { minWidth: 800 }, option: { series: [{ type: 'sankey', nodeWidth: 280, label: { fontSize: 20, lineHeight: 26, width: 264 } }] } },
+        { option: { series: [{ type: 'sankey', nodeWidth: 132, label: { fontSize: 14, lineHeight: 18, width: 120 } }] } },
+      ],
     }),
   };
 }

@@ -80,6 +80,9 @@
 .chart-body--adoption .plot-matrix th:first-child { width: 81px; }
 .chart-body--community .plot-matrix th:first-child { width: 85px; }
 .chart-body--community .plot-matrix thead th { overflow-wrap: anywhere; }
+.chart-body--community .plot-matrix { border-spacing: 1px; }
+.chart-body--community .plot-matrix th, .chart-body--community .plot-matrix td { font-size: .875rem; font-weight: 400; }
+.chart-body--community .plot-matrix td { border-radius: 0; }
 .plot-matrix thead th { padding: 7px 2px; }
 .plot-matrix tbody th { padding: 3px 1px; text-align: left; font-size: var(--font-size-ui); }
 .plot-matrix td {

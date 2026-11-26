@@ -23,6 +23,7 @@ export type Matrix = {
     name: string;
     cells: {
       value: string;
+      showValue?: boolean;
       selectable: boolean;
       tooltip: TooltipContent;
       style?: ChartStyle;

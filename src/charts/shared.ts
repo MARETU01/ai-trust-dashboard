@@ -121,21 +121,33 @@ export function heatColor(value: number | null, diverging = false) {
 }
 
 export function heatmap(t: Translate, headers: readonly string[], names: readonly string[], values: number[][], totals: number[][],
-  { diverging = false, label }: { diverging?: boolean; label: string }) {
-  const rows: Matrix['rows'] = names.map((name, i) => ({
-    name,
-    cells: values[i].map((value, j) => {
-      const n = totals[i][j];
-      const pct = share(value, n);
-      const fill = heatColor(pct, diverging);
-      return {
-        value: percent(pct),
-        selectable: n > 0,
-        tooltip: matrixTip(t, `${name} · ${headers[j]}`, value, n),
-        style: { '--cell-fill': fill, '--cell-text': contrastText(fill) },
-      };
-    }),
-  }));
+  { diverging = false, labels = 'all', label }: { diverging?: boolean; labels?: 'all' | 'row-extrema'; label: string }) {
+  const rows: Matrix['rows'] = names.map((name, i) => {
+    const percentages = values[i].map((value, j) => share(value, totals[i][j]));
+    let minColumn = -1;
+    let maxColumn = -1;
+    percentages.forEach((pct, column) => {
+      if (pct == null) return;
+      // Label the first occurrence of a tie; missing groups are not extrema.
+      if (minColumn === -1 || pct < percentages[minColumn]!) minColumn = column;
+      if (maxColumn === -1 || pct > percentages[maxColumn]!) maxColumn = column;
+    });
+    return {
+      name,
+      cells: values[i].map((value, j) => {
+        const n = totals[i][j];
+        const pct = percentages[j];
+        const fill = heatColor(pct, diverging);
+        return {
+          value: percent(pct),
+          showValue: labels === 'all' || j === minColumn || j === maxColumn,
+          selectable: n > 0,
+          tooltip: matrixTip(t, `${name} · ${headers[j]}`, value, n),
+          style: { '--cell-fill': fill, '--cell-text': contrastText(fill) },
+        };
+      }),
+    };
+  });
   return { matrix: { headers, rows, label: t(label) }, table: matrixTable(t, 'Group', names, headers, values, totals) };
 }
 

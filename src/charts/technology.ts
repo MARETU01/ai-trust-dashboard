@@ -29,12 +29,14 @@ export function technologyRankings(data: SurveyStats['languages'], t: Translate,
 }
 
 export function communityUse({ community }: SurveyStats, t: Translate): ChartView {
-  const names = community[0].items.map(({ name }) => t(name));
-  const values = names.map((_, i) => community.map(({ items }) => items[i].count));
-  const totals = names.map(() => community.map(({ n }) => n));
-  const labels = aiLabels.map((label) => t(label === 'Infrequent' ? 'Less often' : label));
+  const order = [0, 1, 2, 4, 3];
+  const groups = order.map((index) => community[index]);
+  const names = groups[0].items.map(({ name }) => t(name));
+  const values = names.map((_, i) => groups.map(({ items }) => items[i].count));
+  const totals = names.map(() => groups.map(({ n }) => n));
+  const labels = order.map((index) => t(aiLabels[index] === 'Infrequent' ? 'Monthly / Infrequently' : aiLabels[index]));
   return {
-    ...heatmap(t, labels, names, values, totals, { diverging: true, label: 'Community use by AI use and intent' }),
+    ...heatmap(t, labels, names, values, totals, { diverging: true, labels: 'row-extrema', label: 'Community use by AI use and intent' }),
     n: community.reduce((sum, { n }) => sum + n, 0),
     scale: { ...communityColors, end: '100%' },
   };

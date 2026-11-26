@@ -27,7 +27,7 @@ export const sections: Section[] = [
       { id: 'languages', title: 'Which programming languages do developers use?', subtitle: 'Top 10 languages in the full survey sample.', minimum: 350 },
       { id: 'databases', title: 'Which databases do developers use?', subtitle: 'Top 10 databases in the full survey sample.', minimum: 350 },
       { id: 'community', title: 'Community platform use by AI use and intent', subtitle: 'The overall top 10 platforms, compared across AI use and intent groups.', minimum: 365, note: 'Each column uses that group’s valid community-platform responses as its denominator.' },
-      { id: 'models', title: 'AI models used and wanted', subtitle: 'Model groups used in the past year and wanted in the next year.', minimum: 285, note: 'Link width shows the number of respondents selecting both groups. A respondent can contribute to several links.' },
+      { id: 'models', title: 'AI models used and wanted', subtitle: 'Model groups used in the past year and wanted in the next year.', minimum: 480, note: 'Link width shows the number of respondents selecting both groups. A respondent can contribute to several links.' },
       { id: 'taskStatus', title: 'How is AI used across development tasks?', subtitle: 'Current use and plans for the next 3–5 years.', minimum: 565, note: 'Shares are calculated separately for each task from its valid responses.' },
     ],
   },

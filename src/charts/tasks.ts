@@ -1,13 +1,17 @@
 import { TASKS, TASK_STATES, count, percent, share, type SurveyStats } from '../survey.ts';
 import { translations, type Translate } from '../i18n.ts';
 import type { ChartView, TooltipLine } from '../chart-types.ts';
-import { contrastText, palette } from '../chart-theme.ts';
+import { chartFont, palette } from '../chart-theme.ts';
 import { valueAndN, tip, chart, lineAxis, valueAxis, categoryAxis, categoryHover, itemTable, matrixTable, colorLegend } from './shared.ts';
 
 export function tasksStack({ tasks }: SurveyStats, t: Translate): ChartView {
-  const names = TASKS.map(([, name]) => t(name));
-  const values = tasks.map(({ counts }) => counts);
-  const totals = tasks.map(({ n }) => n);
+  const orderedTasks = tasks.map((task, i) => ({
+    ...task,
+    name: TASKS[i][0] === 'task_maintaining_documentation' ? 'Creating or maintaining documentation' : TASKS[i][1],
+  })).sort((a, b) => a.name.localeCompare(b.name, 'en'));
+  const names = orderedTasks.map(({ name }) => t(name));
+  const values = orderedTasks.map(({ counts }) => counts);
+  const totals = orderedTasks.map(({ n }) => n);
   const table = matrixTable(t, 'Task', names, TASK_STATES, values, totals.map((n) => TASK_STATES.map(() => n)));
   const { tooltip, axisTooltip } = categoryHover(names, (i) => tip(t, names[i], [
     ...TASK_STATES.map((label, j): TooltipLine => [label, valueAndN(values[i][j], totals[i])]),
@@ -24,14 +28,15 @@ export function tasksStack({ tasks }: SurveyStats, t: Translate): ChartView {
       rows: table.rows.map((row, i) => [...row, count(totals[i])]),
     },
     option: chart({
-      grid: { top: 8, right: 25, bottom: 27, left: t === translations.en ? 192 : 106 },
+      grid: { top: 8, right: 25, bottom: 27, left: t === translations.en ? 228 : 106 },
       xAxis: valueAxis(), yAxis: categoryAxis(names, { inverse: true, axisLine: { show: false }, tooltip: axisTooltip }),
       tooltip,
       series: TASK_STATES.map((name, i) => ({
         type: 'bar', name: t(name), selectionGroup: name, stack: 'status', barMaxWidth: 19,
         itemStyle: { color: palette.tasks[i] },
-        data: tasks.map(({ n, counts }) => share(counts[i], n)),
-        label: { show: true, position: 'inside', color: contrastText(palette.tasks[i]), fontSize: 11, formatter: ({ value }) => typeof value === 'number' && value >= 9 ? percent(value) : '' },
+        data: orderedTasks.map(({ n, counts }) => share(counts[i], n)),
+        label: { show: true, position: 'inside', color: palette.ink, fontFamily: chartFont, fontSize: 12, fontWeight: 400,
+          formatter: ({ value }) => typeof value === 'number' && value >= 15 ? percent(value) : '' },
       })),
     }),
   };

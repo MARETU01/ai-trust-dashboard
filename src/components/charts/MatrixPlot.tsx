@@ -101,7 +101,7 @@ export default function MatrixPlot({ matrix, selectedIds, onSelect, onClear, too
           {matrix.rows.map(({ name, cells }, row) => (
             <tr key={name}>
               <th scope="row">{name}</th>
-              {cells.map(({ value, style, className, bubble, selectable }, column) => {
+              {cells.map(({ value, showValue, style, className, bubble, selectable }, column) => {
                 const active = hovered?.row === row && hovered.column === column;
                 const markId = matrixMarkId(row, column);
                 const selected = selectedIds.includes(markId);
@@ -133,7 +133,7 @@ export default function MatrixPlot({ matrix, selectedIds, onSelect, onClear, too
                       moveFocus(event, row, column);
                     }}>
                     {bubble && <span className="bubble" style={bubble} />}
-                    {value}
+                    {showValue === false ? <span className="sr-only">{value}</span> : value}
                   </td>
                 );
               })}
