@@ -2,7 +2,7 @@ import { AGE_GROUPS, AI_USE_GROUPS, count, percent, share } from '../survey.ts';
 import type { Translate } from '../i18n.ts';
 import type { EChartsOption, TooltipComponentOption } from 'echarts';
 import type { ChartOption, LegendItem, Matrix, TooltipContent, TooltipLine } from '../chart-types.ts';
-import { chartFont, communityColors, palette } from '../chart-theme.ts';
+import { adoptionColors, chartFont, communityColors, contrastText, palette } from '../chart-theme.ts';
 
 export const ageLabels = AGE_GROUPS.map(([, label]) => label);
 export const aiIds = AI_USE_GROUPS.map(([id]) => id);
@@ -38,7 +38,7 @@ export function chart({ tooltip, ...option }: ChartOption): ChartOption {
 }
 
 export const lineAxis = { show: true, lineStyle: { color: palette.grid } };
-export const axisLabels = { color: palette.muted, fontSize: 11, hideOverlap: true };
+export const axisLabels = { color: palette.muted, fontSize: 12, hideOverlap: true };
 type CartesianAxis = Extract<NonNullable<EChartsOption['xAxis']>, { type?: string }>;
 type ValueAxis = Extract<CartesianAxis, { type?: 'value' }>;
 export const valueAxis = (max = 100, extra: Omit<ValueAxis, 'type'> = {}): ValueAxis => ({
@@ -67,7 +67,7 @@ export function categoryHover(labels: readonly string[], describe: (index: numbe
       trigger: 'axis',
       axisPointer: {
         axis, type: axis === 'angle' ? 'line' : 'shadow',
-        label: { show: false }, shadowStyle: { color: '#6854a014' },
+        label: { show: false }, shadowStyle: { color: palette.hover },
       },
       formatter: (points) => {
         const point = Array.isArray(points) ? points[0] : points;
@@ -105,16 +105,19 @@ export function mix(a: string, b: string, value: number) {
   const channels = (hex: string) => [1, 3, 5].map((offset) => parseInt(hex.slice(offset, offset + 2), 16));
   const from = channels(a);
   const to = channels(b);
-  return `rgb(${from.map((start, i) => Math.round(start + (to[i] - start) * value)).join(',')})`;
+  const amount = Math.max(0, Math.min(1, value));
+  return `#${from.map((start, i) => Math.round(start + (to[i] - start) * amount).toString(16).padStart(2, '0')).join('')}`;
 }
 
 export function heatColor(value: number | null, diverging = false) {
-  if (value == null) return '#f4f2f8';
+  if (value == null) return palette.missing;
   if (diverging) {
     const { low, middle, high } = communityColors;
     return value <= 50 ? mix(low, middle, value / 50) : mix(middle, high, (value - 50) / 50);
   }
-  return mix('#f1edf9', '#59438d', Math.min(value / 60, 1));
+  const { min, max, steps } = adoptionColors;
+  const index = Math.max(0, Math.min(steps.length - 1, Math.floor((value - min) / (max - min) * steps.length)));
+  return steps[index];
 }
 
 export function heatmap(t: Translate, headers: readonly string[], names: readonly string[], values: number[][], totals: number[][],
@@ -124,11 +127,12 @@ export function heatmap(t: Translate, headers: readonly string[], names: readonl
     cells: values[i].map((value, j) => {
       const n = totals[i][j];
       const pct = share(value, n);
+      const fill = heatColor(pct, diverging);
       return {
         value: percent(pct),
         selectable: n > 0,
         tooltip: matrixTip(t, `${name} · ${headers[j]}`, value, n),
-        style: { '--cell-fill': heatColor(pct, diverging), '--cell-text': !diverging && (pct ?? 0) >= 45 ? '#fff' : palette.ink },
+        style: { '--cell-fill': fill, '--cell-text': contrastText(fill) },
       };
     }),
   }));

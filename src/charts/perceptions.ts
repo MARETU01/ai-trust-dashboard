@@ -62,7 +62,7 @@ export function sentimentDumbbell({ sentimentTrust }: SurveyStats, t: Translate)
           const b = api.coord([second, api.value(2)]);
           return {
             type: 'group', children: [
-              { type: 'line', shape: { x1: a[0], y1: a[1], x2: b[0], y2: b[1] }, style: { stroke: '#bcb2ce', lineWidth: 3, opacity } },
+              { type: 'line', shape: { x1: a[0], y1: a[1], x2: b[0], y2: b[1] }, style: { stroke: palette.connector, lineWidth: 3, opacity } },
               ...[a, b].map(([cx, cy], i) => ({ type: 'circle' as const, shape: { cx, cy, r: 5.5 }, style: { fill: colors[i], opacity } })),
             ],
           };
@@ -89,7 +89,7 @@ export function ageThreat({ jobThreat: groups }: SurveyStats, t: Translate): Cha
       xAxis: valueAxis(), yAxis: categoryAxis(ageLabels, { inverse: true, tooltip: axisTooltip }),
       tooltip,
       series: THREAT_LEVELS.map((name, j) => ({
-        type: 'scatter', name: t(name), encode: { x: 0, y: 1 }, itemStyle: { color: palette.threat[j], opacity: 0.69 },
+        type: 'scatter', name: t(name), encode: { x: 0, y: 1 }, itemStyle: { color: palette.threat[j], opacity: 1 },
         data: groups.map(({ n }, i) => [share(values[i][j], n), i, values[i][j]]),
         symbolSize: (point) => point[2] ? 6 + 39 * Math.sqrt(point[2] / max) : 0,
       })),

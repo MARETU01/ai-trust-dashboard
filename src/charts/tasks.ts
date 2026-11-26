@@ -1,7 +1,7 @@
 import { TASKS, TASK_STATES, count, percent, share, type SurveyStats } from '../survey.ts';
 import { translations, type Translate } from '../i18n.ts';
 import type { ChartView, TooltipLine } from '../chart-types.ts';
-import { palette } from '../chart-theme.ts';
+import { contrastText, palette } from '../chart-theme.ts';
 import { valueAndN, tip, chart, lineAxis, valueAxis, categoryAxis, categoryHover, itemTable, matrixTable, colorLegend } from './shared.ts';
 
 export function tasksStack({ tasks }: SurveyStats, t: Translate): ChartView {
@@ -31,7 +31,7 @@ export function tasksStack({ tasks }: SurveyStats, t: Translate): ChartView {
         type: 'bar', name: t(name), selectionGroup: name, stack: 'status', barMaxWidth: 19,
         itemStyle: { color: palette.tasks[i] },
         data: tasks.map(({ n, counts }) => share(counts[i], n)),
-        label: { show: true, position: 'inside', color: '#25213c', fontSize: 10, formatter: ({ value }) => typeof value === 'number' && value >= 9 ? percent(value) : '' },
+        label: { show: true, position: 'inside', color: contrastText(palette.tasks[i]), fontSize: 11, formatter: ({ value }) => typeof value === 'number' && value >= 9 ? percent(value) : '' },
       })),
     }),
   };
@@ -47,7 +47,6 @@ export function usageRose({ tasks }: SurveyStats, t: Translate): ChartView {
   const order = tasks.map(({ n, counts }, i) => ({
     id: TASKS[i][0], name: t(TASKS[i][1]), label: t(TASKS[i][2]), n, current: counts[0] + counts[1],
   })).sort((a, b) => (share(b.current, b.n) ?? -1) - (share(a.current, a.n) ?? -1));
-  const colors = [...palette.ages, ...palette.tasks, palette.pink, palette.purple];
   const labels = order.map(({ label }) => label);
   const { tooltip, axisTooltip } = categoryHover(labels, (i) => {
     const { name, n, current } = order[i];
@@ -61,7 +60,7 @@ export function usageRose({ tasks }: SurveyStats, t: Translate): ChartView {
       polar: { radius: '65%', center: ['50%', '51%'] },
       angleAxis: {
         type: 'category', data: labels, startAngle: 90, tooltip: axisTooltip,
-        axisLabel: { color: palette.muted, fontSize: 10, interval: 0, margin: 12 },
+        axisLabel: { color: palette.muted, fontSize: 11, interval: 0, margin: 12 },
         axisTick: { show: false }, axisLine: { show: false }, splitLine: { show: true, lineStyle: { color: palette.grid } },
       },
       radiusAxis: {
@@ -71,7 +70,7 @@ export function usageRose({ tasks }: SurveyStats, t: Translate): ChartView {
       tooltip,
       series: [{
         type: 'bar', coordinateSystem: 'polar', roundCap: false,
-        data: order.map(({ id, n, current }, i) => ({ id, value: share(current, n), itemStyle: { color: colors[i], opacity: 0.9 } })),
+        data: order.map(({ id, n, current }) => ({ id, value: share(current, n), itemStyle: { color: palette.taskUsage[id], opacity: 1 } })),
       }],
     }),
   };

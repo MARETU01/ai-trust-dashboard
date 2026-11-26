@@ -33,7 +33,7 @@ export type Matrix = {
 };
 export type ChartTable = { headers: string[]; rows: string[][] };
 export type LegendItem = readonly [label: string, color: string, id: string];
-export type ColorScale = { low: string; middle?: string; high: string; end: string };
+export type ColorScale = { low: string; middle?: string; high: string; colors?: readonly string[]; start?: string; end: string };
 export type HighlightChoice = { value: string; label: string; group?: string };
 export type MarkSelector = (value: string, additive?: boolean) => void;
 

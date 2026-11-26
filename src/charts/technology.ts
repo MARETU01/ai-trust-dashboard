@@ -20,9 +20,9 @@ export function technologyRankings(data: SurveyStats['languages'], t: Translate,
       series: [{
         type: dots ? 'scatter' : 'bar',
         data: dots ? percentages.map((value, i) => [value, i]) : percentages,
-        itemStyle: { color: dots ? '#55b49a' : palette.purple, opacity: 1, borderRadius: [0, 5, 5, 0] },
-        symbol: 'circle', symbolSize: 13, barMaxWidth: 15,
-        label: { show: true, position: 'right', formatter: ({ dataIndex }) => percent(percentages[dataIndex]), color: palette.muted, fontSize: 10 },
+        itemStyle: { color: dots ? palette.databases : palette.languages, opacity: 1, borderRadius: 0 },
+        symbol: 'circle', symbolSize: dots ? (point) => 26 * Math.sqrt(Math.max(0, point[0] ?? 0) / scale) : 13, barMaxWidth: 15,
+        label: { show: true, position: 'right', formatter: ({ dataIndex }) => percent(percentages[dataIndex]), color: palette.muted, fontSize: 11 },
       }],
     }),
   };

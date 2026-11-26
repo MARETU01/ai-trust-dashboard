@@ -1,7 +1,7 @@
 import { AGE_GROUPS, EXPERIENCE_GROUPS, TRUST_LEVELS, count, percent, share, type SurveyStats } from '../survey.ts';
 import type { Translate } from '../i18n.ts';
 import type { ChartView, Matrix, TooltipLine } from '../chart-types.ts';
-import { chartFont, palette } from '../chart-theme.ts';
+import { adoptionColors, chartFont, learningColors, palette } from '../chart-theme.ts';
 import { ageLabels, aiIds, aiLabels, trustLabels, valueAndN, responseLine, tip, chart, axisLabels, valueAxis, categoryAxis, categoryHover, matrixTip, itemTable, matrixTable, mix, heatColor, heatmap, colorLegend } from './shared.ts';
 
 export function ageDistribution({ demographics }: SurveyStats, t: Translate): ChartView {
@@ -23,9 +23,9 @@ export function ageDistribution({ demographics }: SurveyStats, t: Translate): Ch
         ? tip(t, params.name, [responseLine(t, params.value, n)]) : '' },
       series: [{
         type: 'pie', radius: ['51%', '74%'], center: ['50%', '50%'], stillShowZeroSum: false,
-        itemStyle: { borderColor: '#fff', borderWidth: 3, borderRadius: 4 },
+        itemStyle: { borderColor: palette.paper, borderWidth: 1, borderRadius: 0 },
         label: { show: true, formatter: ({ value }) => percent(typeof value === 'number' ? share(value, n) : null), color: palette.ink, fontSize: 11 },
-        labelLine: { length: 9, length2: 6, lineStyle: { color: '#b6adc9' } },
+        labelLine: { length: 9, length2: 6, lineStyle: { color: palette.guide } },
         data: ageLabels.flatMap((name, i) => values[i] ? [{ id: `age-${i}`, name, value: values[i], itemStyle: { color: palette.ages[i] } }] : []),
       }],
     }),
@@ -38,7 +38,10 @@ export function adoption({ adoption: groups }: SurveyStats, t: Translate): Chart
   return {
     ...heatmap(t, ageLabels, aiLabels.map((name) => t(name)), values, totals, { label: 'AI use by age group' }),
     n: groups.reduce((sum, group) => sum + group.n, 0),
-    scale: { low: heatColor(0), high: heatColor(60), end: '60%+' },
+    scale: {
+      low: heatColor(0), high: heatColor(100), colors: adoptionColors.steps,
+      start: `${adoptionColors.min}%`, end: `${adoptionColors.max}%+`,
+    },
   };
 }
 
@@ -63,7 +66,7 @@ export function trustAcrossAge({ ageTrust: groups }: SurveyStats, t: Translate):
         portions[2], portions[0], portions[1], portions[3], portions[4], portions[5],
       ].map(([status, sign]) => ({
         type: 'bar', name: t(trustLabels[status]), stack: 'trust', barMaxWidth: 23,
-        itemStyle: { color: palette.trust[status], borderColor: '#fff', borderWidth: 0.5 },
+        itemStyle: { color: palette.trust[status], borderColor: palette.paper, borderWidth: 0.5 },
         data: groups.map(({ n }, index) => n ? sign * (share(values[index][status], n) ?? 0) : null),
       })),
     }),
@@ -87,7 +90,11 @@ export function experienceLearning({ learning }: SurveyStats, t: Translate): Cha
           selectable: n > 0,
           className: 'bubble-cell',
           tooltip: matrixTip(t, `${name} · ${experienceLabels[j]}`, yes, n),
-          bubble: n ? { '--bubble': `${22 + 44 * Math.sqrt(n / max)}px`, '--bubble-fill': mix('#e2d4f1', '#78cfb4', (pct ?? 0) / 100) } : undefined,
+          bubble: n ? {
+            '--bubble': `${22 + 44 * Math.sqrt(n / max)}px`,
+            '--bubble-fill': mix(learningColors.low, learningColors.high,
+              ((pct ?? 0) - learningColors.min) / (learningColors.max - learningColors.min)),
+          } : undefined,
         };
       }),
     })),

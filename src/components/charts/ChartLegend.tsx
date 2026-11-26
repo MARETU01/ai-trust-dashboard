@@ -25,11 +25,14 @@ export default function Legend({ legend, scale, highlightChoices, selected, onSe
     );
   }
   if (!scale) return null;
-  const colors = [scale.low, scale.middle, scale.high].filter(Boolean);
-  const style: ChartStyle = { '--legend-stops': colors.join(', ') };
+  const colors = scale.colors ?? [scale.low, scale.middle, scale.high].filter(Boolean);
+  const stops = scale.colors ? colors.flatMap((color, i) => [
+    `${color} ${100 * i / colors.length}%`, `${color} ${100 * (i + 1) / colors.length}%`,
+  ]) : colors;
+  const style: ChartStyle = { '--legend-stops': stops.join(', ') };
   return (
     <div className="chart-legend">
-      0%<span className="legend-gradient" aria-hidden="true" style={style} />{scale.end}
+      {scale.start ?? '0%'}<span className="legend-gradient" aria-hidden="true" style={style} />{scale.end}
     </div>
   );
 }

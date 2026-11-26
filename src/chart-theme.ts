@@ -1,14 +1,46 @@
-export const chartFont = 'Inter, "Segoe UI", "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", Arial, sans-serif';
+export const chartFont = '"Times New Roman", "Noto Serif CJK SC", "Songti SC", "Microsoft YaHei", serif';
 
+// Category colors sampled from the approved new_fig references.
 export const palette = {
-  ink: '#27243e', muted: '#625d76', grid: '#eae7f0', purple: '#6854a0',
-  green: '#278469', pink: '#d984b0',
-  ages: ['#67c4aa', '#9bdbd6', '#87b9eb', '#aa94d7', '#e9b2d4', '#7561aa'],
-  trust: ['#7656a5', '#b6a0d5', '#f3dc9c', '#97ddc3', '#348972'],
-  models: ['#78c9b2', '#5ba7bd', '#856ab6', '#b78ac9', '#cf8bac', '#df9eb3'],
-  tasks: ['#9ae2cd', '#389984', '#f1d18a', '#c99ddc', '#b4a7da'],
-  complex: ['#278469', '#af8a48', '#7656a5', '#a37088'],
-  threat: ['#896fb6', '#d4b981', '#4ba88c'],
+  ink: '#333333', muted: '#635c70', grid: '#f1f1f1', paper: '#ffffff',
+  purple: '#7f6ca3', green: '#7fdfbb', languages: '#846fa0', databases: '#89e7c5',
+  guide: '#d8d1e4', connector: '#929a9e', hover: '#846fa014', missing: '#f1f1f1',
+  ages: ['#96eacc', '#b6ffef', '#b5e3ff', '#bcaed4', '#f4d9f2', '#8e7dad'],
+  trust: ['#8b78ae', '#b3a6cf', '#f6e5ad', '#ace1cc', '#70b39f'],
+  models: ['#b1e6d8', '#2fafc2', '#7866a6', '#9f65a9', '#c264a4', '#e06599'],
+  tasks: ['#a8e6d0', '#76c6ac', '#eceef1', '#cdd1d8', '#cec6de'],
+  complex: ['#7fdfbb', '#dbcdba', '#7f6ca3', '#bea5ad'],
+  threat: ['#ac9fc3', '#e8ded2', '#acead3'],
+  taskUsage: {
+    task_searching_for_answers: '#9981b9',
+    task_writing_code: '#ba9fdd',
+    task_learning_new_concepts: '#c4bedf',
+    task_debugging_code: '#a9c8f3',
+    task_generating_content_or_data: '#8de1ef',
+    task_documenting_code: '#91e7d3',
+    task_learning_a_codebase: '#32e9c1',
+    task_maintaining_documentation: '#bfe6a6',
+    task_testing_code: '#ffd782',
+    task_committing_and_reviewing_code: '#ffc1a4',
+    task_project_planning: '#ffafbf',
+    task_predictive_analytics: '#f6acd7',
+    task_deployment_and_monitoring: '#ff5a6b',
+  },
 };
 
-export const communityColors = { low: '#a68ac8', middle: '#f2edf6', high: '#83d7bb' };
+// Keep the reference domains fixed so filtering does not change a color's meaning.
+export const adoptionColors = {
+  min: 2.71, max: 51.12,
+  steps: ['#ebe3f6', '#d5cae7', '#bfb0d7', '#a997c8', '#927db8'],
+};
+export const learningColors = { min: 50.97, max: 89.84, low: '#f1f1f1', high: '#89e7c5' };
+export const communityColors = { low: '#8874ad', middle: '#d9d9d9', high: '#89e7c5' };
+
+export function contrastText(background: string) {
+  const channels = [1, 3, 5].map((offset) => {
+    const channel = parseInt(background.slice(offset, offset + 2), 16) / 255;
+    return channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
+  });
+  const luminance = channels[0] * 0.2126 + channels[1] * 0.7152 + channels[2] * 0.0722;
+  return (luminance + 0.05) / 0.05 >= 1.05 / (luminance + 0.05) ? '#000000' : palette.paper;
+}

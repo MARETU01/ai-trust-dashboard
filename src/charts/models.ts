@@ -1,7 +1,7 @@
 import { MODELS, count, type SurveyStats } from '../survey.ts';
 import type { Translate } from '../i18n.ts';
 import type { ChartSeries, ChartView } from '../chart-types.ts';
-import { palette } from '../chart-theme.ts';
+import { contrastText, palette } from '../chart-theme.ts';
 import { tip, chart } from './shared.ts';
 
 export const modelHighlightGroups = ['Used in the past year', 'Wanted in the next year'];
@@ -18,6 +18,7 @@ export function modelSankey({ modelPairs, modelN }: SurveyStats, t: Translate): 
     const value = values.reduce((sum, count) => sum + count, 0);
     return value ? [{
       name: `${prefix}${i}`, labelText: name, depth, value, itemStyle: { color: palette.models[i] },
+      label: { color: contrastText(palette.models[i]) },
     }] : [];
   }));
   const highlightChoices = [
@@ -55,7 +56,7 @@ export function modelSankey({ modelPairs, modelN }: SurveyStats, t: Translate): 
             ...node.itemStyle, opacity: muted ? 0.24 : 1,
             borderColor: palette.ink, borderWidth: outlined.has(node.name) ? 2 : 0,
           },
-          label: { opacity: muted ? fadedLabelOpacity : 1 },
+          label: { ...node.label, opacity: muted ? fadedLabelOpacity : 1 },
         };
       }),
       links: styledLinks,
@@ -63,7 +64,7 @@ export function modelSankey({ modelPairs, modelN }: SurveyStats, t: Translate): 
       lineStyle: { color: 'source', curveness: 0.48 },
       blur: { itemStyle: { opacity: 0.36 }, lineStyle: { opacity: 0.12 }, label: { opacity: fadedLabelOpacity } },
       label: { position: 'inside', formatter: ({ data }) => typeof data === 'object' && data && 'labelText' in data
-        ? String(data.labelText) : '', color: '#231b35', fontSize: 11, fontWeight: 600, width: 82, overflow: 'break' },
+        ? String(data.labelText) : '', color: palette.ink, fontSize: 12, fontWeight: 600, width: 82, overflow: 'break' },
     }];
   }
   return {

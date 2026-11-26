@@ -10,7 +10,7 @@
 .dashboard-header {
   padding: clamp(22px, 2.3vw, 38px) var(--section-pad) clamp(14px, 1.4vw, 22px);
   border-radius: calc(var(--radius-panel) - 1px) calc(var(--radius-panel) - 1px) 0 0;
-  background: linear-gradient(145deg, #f0e9f8, #ece4f5);
+  background: linear-gradient(125deg, var(--color-header-start), var(--color-header-end));
 }
 .header-intro { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: 10px 20px; }
 .eyebrow {
@@ -19,7 +19,7 @@
 .survey-source { text-transform: uppercase; }
 .dashboard-header h1 {
   margin-top: 7px; color: var(--color-heading); font-family: var(--font-heading);
-  font-size: clamp(2rem, 4.5vw, 3.6rem); font-weight: 550; letter-spacing: var(--tracking-display); line-height: 1.09;
+  font-size: clamp(2rem, 4.5vw, 3.6rem); font-weight: 650; letter-spacing: var(--tracking-display); line-height: 1.09;
 }
 .language-switch {
   min-width: 92px; min-height: 40px; padding-inline: 12px; border-color: var(--color-border-strong);
@@ -70,7 +70,7 @@
 .section-heading { margin-bottom: 15px; }
 .section-heading h2, .methodology h2 {
   color: var(--color-heading); font-family: var(--font-heading); font-size: clamp(1.65rem, 2.5vw, 2.25rem);
-  font-weight: 550; letter-spacing: var(--tracking-heading); line-height: 1.13;
+  font-weight: 600; letter-spacing: var(--tracking-heading); line-height: 1.13;
 }
 .section-heading p { margin-top: 5px; color: var(--color-muted); font-size: .92rem; line-height: 1.5; }
 .chart-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(12px, 1.15vw, 19px); }

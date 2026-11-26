@@ -1,6 +1,6 @@
 :root {
   --font-sans: Inter, "Segoe UI", "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", Arial, sans-serif;
-  --font-heading: Georgia, "Times New Roman", serif;
+  --font-heading: "Times New Roman", Georgia, serif;
   --tracking-display: -.038em;
   --tracking-heading: -.025em;
   --tracking-card: -.02em;
@@ -8,30 +8,33 @@
   --font-size-ui: .8125rem;
   --font-size-control: .875rem;
 
-  --color-background: #f5f3f8;
-  --color-sheet: #fdfcfe;
+  --color-background: #f7f8f8;
+  --color-sheet: #fff;
   --color-surface: #fff;
-  --color-tinted: #f7f2fa;
-  --color-hover: #f0e8f8;
-  --color-selected: #e9dcf3;
-  --color-text: #27243e;
-  --color-heading: #302747;
-  --color-muted: #625d76;
-  --color-accent: #634b9a;
-  --color-accent-strong: #50396e;
-  --color-border: #e2dced;
-  --color-border-strong: #a990bc;
-  --color-divider: #eeeaf3;
-  --color-focus: #7852bf;
+  --color-tinted: #f7f6f9;
+  --color-hover: #eee8f5;
+  --color-selected: #e5dcf0;
+  --color-text: #333;
+  --color-heading: #242128;
+  --color-muted: #635c70;
+  --color-accent: #7f6ca3;
+  --color-accent-strong: #5e4b7b;
+  --color-border: #e2dee8;
+  --color-border-strong: #ac9fc3;
+  --color-divider: #eceef1;
+  --color-focus: #665184;
   --color-error: #9d364f;
-  --color-scroll-thumb: #c5b5dd;
+  --color-scroll-thumb: #bcaed4;
+  --color-header-start: #f4f0f8;
+  --color-header-end: #eef9f5;
+  --color-backdrop: rgb(36 33 40 / .62);
 
   --radius-panel: 18px;
   --radius-card: 12px;
   --radius-control: 8px;
   --radius-small: 4px;
-  --shadow-card: 0 2px 4px #30294308;
-  --shadow-tooltip: 0 8px 28px #22143e20;
+  --shadow-card: 0 1px 3px #33333308;
+  --shadow-tooltip: 0 8px 28px #33333320;
 }
 
 :root:lang(zh-CN) {
