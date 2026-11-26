@@ -1,6 +1,6 @@
 {
   "name": "ai-trust-dashboard",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,6 +9,8 @@
     "prebuild": "tsx script/prepare-web-data.ts",
     "typecheck": "tsc --noEmit",
     "build": "npm run typecheck && vite build",
+    "prebuild:offline": "tsx script/prepare-web-data.ts",
+    "build:offline": "npm run typecheck && vite build --config vite.offline.config.ts",
     "preview": "vite preview"
   },
   "dependencies": {

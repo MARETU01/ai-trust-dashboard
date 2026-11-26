@@ -62,6 +62,20 @@ npm run preview
 
 构建产物位于 `dist/`，预览地址默认为 http://localhost:4173 。
 
+### 单文件离线版
+
+安装依赖后执行：
+
+```bash
+npm run build:offline
+```
+
+生成 `dist-offline/ai-trust-dashboard.html`。将这一个文件复制到其他电脑，用现代浏览器双击打开即可，无需 Node.js、Docker 或本地服务器，也无需联网加载图表和数据。支持筛选、图表高亮、放大、数据表及中英文切换。
+
+单文件版使用独立配置和输出目录；原有 `npm run dev`、`npm run build`、GitHub Pages 和 Docker 构建流程保持原样。
+
+推送 `v*` 版本 tag 后，[Release 工作流](.github/workflows/release.yml) 会构建 `ai-trust-dashboard-<版本号>-offline.html` 和 `SHA256SUMS`，并上传到 [GitHub Releases](https://github.com/MARETU01/ai-trust-dashboard/releases) 的草稿中。确认发布说明和附件后，点击 **Publish release** 正式发布。该 tag 对应的提交需已进入远程 `main`。
+
 ## 数据来源
 
 数据来自 **Stack Overflow Developer Survey 2025**，由 Stack Overflow 发布。

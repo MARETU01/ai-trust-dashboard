@@ -14,5 +14,5 @@
     "skipLibCheck": true,
     "noEmit": true
   },
-  "include": ["src", "script/prepare-web-data.ts", "vite.config.ts"]
+  "include": ["src", "script/prepare-web-data.ts", "vite.config.ts", "vite.offline.config.ts"]
 }

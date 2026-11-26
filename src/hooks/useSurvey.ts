@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import datasetUrl from '../generated/survey.csv.gz?url';
+import { createSurveyWorker, datasetUrl } from './survey-runtime.ts';
 import generatedSummary from '../generated/summary.json';
 import type { SurveyFilters, SurveySummary } from '../survey.ts';
 import type { SurveyReply, SurveyRequest } from '../survey-messages.ts';
@@ -31,7 +31,7 @@ export default function useSurvey() {
     }
     setState('loading');
     if (!worker.current) {
-      const instance = new Worker(new URL('../data-worker.ts', import.meta.url), { type: 'module' });
+      const instance = createSurveyWorker();
       instance.addEventListener('message', ({ data }: MessageEvent<SurveyReply>) => {
         if (data.request !== request.current) return;
         if ('error' in data) {

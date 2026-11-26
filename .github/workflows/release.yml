@@ -1,0 +1,108 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    name: Build offline HTML
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out tagged version
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '26'
+          cache: npm
+
+      - name: Validate version and main ancestry
+        env:
+          VERSION: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          node --input-type=module -e 'import { parseVersion } from "./.github/scripts/image-tags.mjs"; parseVersion(process.env.VERSION);'
+          git merge-base --is-ancestor HEAD origin/main
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build standalone dashboard
+        run: npm run build:offline
+
+      - name: Package HTML and checksums
+        env:
+          VERSION: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          test -s dist-offline/ai-trust-dashboard.html
+          mkdir -p artifacts
+          cp dist-offline/ai-trust-dashboard.html "artifacts/ai-trust-dashboard-${VERSION}-offline.html"
+          cd artifacts
+          sha256sum -- *.html > SHA256SUMS
+          sha256sum --check SHA256SUMS
+
+      - name: Upload offline package
+        uses: actions/upload-artifact@v7
+        with:
+          name: offline-${{ github.ref_name }}
+          path: artifacts/*
+          if-no-files-found: error
+          retention-days: 7
+          overwrite: true
+
+  release:
+    name: Create or update release draft
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Download offline package
+        uses: actions/download-artifact@v8
+        with:
+          name: offline-${{ github.ref_name }}
+          path: artifacts
+
+      - name: Verify checksums
+        working-directory: artifacts
+        run: sha256sum --check SHA256SUMS
+
+      - name: Create or update draft and upload files
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          VERSION: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          if draft=$(gh release view "$VERSION" --json isDraft --jq .isDraft); then
+            if [[ $draft != true ]]; then
+              echo "Release $VERSION is already published; refusing to replace its assets" >&2
+              exit 1
+            fi
+          else
+            options=(--draft --verify-tag --title "$VERSION" --generate-notes)
+            if [[ $VERSION == *-* ]]; then
+              options+=(--prerelease)
+            fi
+            gh release create "$VERSION" "${options[@]}"
+          fi
+          gh release upload "$VERSION" artifacts/* --clobber
