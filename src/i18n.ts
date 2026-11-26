@@ -4,6 +4,7 @@ export type Translate = (message: string, values?: TranslationValues) => string;
 
 const chinese: Readonly<Partial<Record<string, string>>> = {
   'AI Trust Observatory': '开发者 AI 使用与信任观察',
+  'GitHub repository': 'GitHub 仓库',
   'Explore how developers use and trust AI in the 2025 Stack Overflow Developer Survey.': '通过 2025 年 Stack Overflow 开发者调查，了解开发者如何使用和信任 AI。',
   '2025 Stack Overflow Developer Survey': '2025 年 Stack Overflow 开发者调查',
   'How developers use and trust AI': '开发者如何使用和信任 AI',

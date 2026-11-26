@@ -96,7 +96,13 @@ export default function App() {
         <div className="dashboard-notes">
           <Methodology t={t} />
         </div>
-        <footer>{t('AI Trust Observatory')}<span>{t('2025 Stack Overflow Developer Survey')}</span></footer>
+        <footer>
+          <span>{t('AI Trust Observatory')}</span>
+          <span>{t('2025 Stack Overflow Developer Survey')}</span>
+          <a href="https://github.com/MARETU01/ai-trust-dashboard" target="_blank" rel="noopener noreferrer">
+            {t('GitHub repository')}
+          </a>
+        </footer>
       </main>
     </>
   );

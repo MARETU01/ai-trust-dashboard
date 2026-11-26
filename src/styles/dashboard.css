@@ -82,9 +82,10 @@
 .methodology dt { padding-bottom: 2px; font-size: var(--font-size-control); font-weight: 700; }
 .methodology dd { color: var(--color-muted); font-size: var(--font-size-control); line-height: 1.55; }
 .dashboard > footer {
-  display: flex; justify-content: space-between; gap: 14px; padding: 12px var(--section-pad);
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; padding: 12px var(--section-pad);
   border-top: 1px solid var(--color-border); color: var(--color-muted); font-size: var(--font-size-ui);
 }
+.dashboard > footer a { color: var(--color-accent-strong); text-underline-offset: 3px; }
 
 @media (min-width: 700px) and (max-width: 1439px) {
   #chart-community { grid-column: 1 / -1; }
