@@ -215,7 +215,7 @@ export function summarize(survey: Survey, filters: Partial<SurveyFilters> = {}) 
   const demographics = countsBy(rows, ['age'], ages, () => 'age', (row) => row.age)[0];
   const adoption = countsBy(rows, ages, usage, (row) => row.age, (row) => row.aiUse);
   const ageTrust = countsBy(rows, ages, TRUST_LEVELS, (row) => row.age, (row) => row.trust);
-  const learning = matrix(3, 3).map((cells) => cells.map(() => ({ n: 0, yes: 0 })));
+  const learning = matrix(3, 3).map((cells) => cells.map(() => ({ n: 0, yes: 0, respondents: 0 })));
   const complexity = countsBy(rows, usage.slice(0, 3), COMPLEX_RATINGS, (row) => row.aiUse, (row) => row.complexity);
   const sentimentTrust = countsBy(rows, SENTIMENTS, TRUST_LEVELS, (row) => row.sentiment, (row) => row.trust);
   const jobThreat = countsBy(rows, ages, THREAT_LEVELS, (row) => row.age, (row) => row.threat);
@@ -246,11 +246,16 @@ export function summarize(survey: Survey, filters: Partial<SurveyFilters> = {}) 
         for (const target of row.wanted) modelPairs[source][target] += 1;
       }
     }
-    if (row.learning && row.experience > 0 && currentUsers.has(row.aiUse)) {
-      const band = row.experience <= 5 ? 0 : row.experience <= 10 ? 1 : 2;
+    const band = row.experience >= 1 && row.experience <= 5 ? 0
+      : row.experience >= 6 && row.experience <= 10 ? 1 : row.experience >= 11 ? 2 : -1;
+    if (band >= 0 && currentUsers.has(row.aiUse)) {
       const group = learning[usage.findIndex((key) => key === row.aiUse)][band];
-      group.n += 1;
-      if (row.learning.startsWith('yes_')) group.yes += 1;
+      // Tableau sizes the bubble by all respondents, independently of learning-answer validity.
+      group.respondents += 1;
+      if (row.learning) {
+        group.n += 1;
+        if (row.learning.startsWith('yes_')) group.yes += 1;
+      }
     }
     // Figure 12 uses professional developers who currently use AI tools.
     const eligibleForTaskUsage = row.developerStatus === 'professional_developer' && currentUsers.has(row.aiUse);

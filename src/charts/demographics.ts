@@ -83,30 +83,39 @@ export function experienceLearning({ learning }: SurveyStats, t: Translate): Cha
   const groups = aiLabels.slice(0, 3).map((name) => t(name));
   const experienceLabels = EXPERIENCE_GROUPS.map((name) => t(name));
   const totals = learning.map((row) => row.map(({ n }) => n));
-  const max = Math.max(1, ...totals.flat());
+  const respondentTotal = learning.flat().reduce((sum, { respondents }) => sum + respondents, 0);
+  const validTotal = totals.flat().reduce((sum, n) => sum + n, 0);
+  const max = Math.max(1, ...learning.flat().map(({ respondents }) => respondents));
   const matrix: Matrix = {
     headers: experienceLabels,
     label: t('AI learning rate by work experience'),
     rows: groups.map((name, i) => ({
       name,
-      cells: learning[i].map(({ yes, n }, j) => {
+      cells: learning[i].map(({ yes, n, respondents }, j) => {
         const pct = share(yes, n);
+        const tooltip = matrixTip(t, `${name} · ${experienceLabels[j]}`, yes, n);
         return {
           value: percent(pct),
-          selectable: n > 0,
+          selectable: respondents > 0,
           className: 'bubble-cell',
-          tooltip: matrixTip(t, `${name} · ${experienceLabels[j]}`, yes, n),
-          bubble: n ? {
-            '--bubble': String(Math.sqrt(n / max)),
-            '--bubble-fill': mix(learningColors.low, learningColors.high,
-              ((pct ?? 0) - learningColors.min) / (learningColors.max - learningColors.min)),
+          tooltip: { ...tooltip, lines: [...tooltip.lines, [t('Respondents in group'), count(respondents)]] },
+          bubble: respondents ? {
+            '--bubble': String(Math.sqrt(respondents / max)),
+            '--bubble-fill': pct == null ? palette.missing : mix(learningColors.low, learningColors.high,
+              (pct - learningColors.min) / (learningColors.max - learningColors.min)),
           } : undefined,
         };
       }),
     })),
   };
   return {
-    matrix, n: totals.flat().reduce((sum, n) => sum + n, 0),
-    table: matrixTable(t, 'AI use', groups, experienceLabels, learning.map((row) => row.map(({ yes }) => yes)), totals),
+    matrix, n: respondentTotal,
+    sample: t('Group n = {total} · valid AI-learning n = {valid}', { total: count(respondentTotal), valid: count(validTotal) }),
+    table: {
+      headers: ['AI use', 'Work experience', 'Share', 'Responses', 'Valid AI-learning responses', 'Respondents in group'].map((label) => t(label)),
+      rows: learning.flatMap((row, i) => row.map(({ yes, n, respondents }, j) => [
+        groups[i], experienceLabels[j], percent(share(yes, n)), count(yes), count(n), count(respondents),
+      ])),
+    },
   };
 }

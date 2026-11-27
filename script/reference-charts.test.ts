@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { parseSurvey } from '../src/parse-survey.ts';
-import { summarize } from '../src/survey.ts';
+import { createSurvey, summarize, surveyFields, type SurveyCsvRow } from '../src/survey.ts';
 
 // Visible percentages transcribed from tableau_fig/00.png–12.png, in survey.ts domain order.
 // The unlabelled Sankey nodes are checked against the source co-selection counts.
@@ -34,6 +34,24 @@ test('02: trust endpoints within each age group', () => {
 test('03: AI learning by experience and use frequency', () => {
   assert.deepEqual(stats.learning.map((row) => row.map(({ yes, n }) => pct(yes, n))),
     [[81.86, 87.36, 89.84], [69.41, 77.08, 82.68], [50.97, 58.56, 63.79]].map(formatted));
+});
+
+test('03: Tableau bubble sizes include respondents with missing learning answers', () => {
+  assert.deepEqual(stats.learning.map((row) => row.map(({ respondents }) => respondents)),
+    [[4216, 3502, 7162], [1473, 1180, 2825], [983, 960, 2277]]);
+  assert.deepEqual(stats.learning.map((row) => row.map(({ n }) => n)),
+    [[4212, 3498, 7154], [1471, 1178, 2823], [981, 958, 2270]]);
+});
+
+test('03: filtered group size remains separate from the learning-rate denominator', () => {
+  const blank = Object.fromEntries(surveyFields.map((field) => [field, ''])) as SurveyCsvRow;
+  const sample = createSurvey([
+    { ...blank, country: 'A', ai_use_group: 'daily', work_experience_years: '3', ai_learning: 'yes_for_work' },
+    { ...blank, country: 'B', ai_use_group: 'daily', work_experience_years: '3' },
+  ]);
+  assert.deepEqual(summarize(sample).learning[0][0], { n: 1, yes: 1, respondents: 2 });
+  assert.deepEqual(summarize(sample, { country: 'A' }).learning[0][0], { n: 1, yes: 1, respondents: 1 });
+  assert.deepEqual(summarize(sample, { country: 'B' }).learning[0][0], { n: 0, yes: 0, respondents: 1 });
 });
 
 test('04: top ten languages', () => {

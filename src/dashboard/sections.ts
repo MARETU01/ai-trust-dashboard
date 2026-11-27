@@ -17,7 +17,7 @@ export const sections: Section[] = [
       { id: 'ages', title: 'Who took the survey?', subtitle: 'Age distribution of the selected sample.' },
       { id: 'adoption', title: 'The AI adoption spectrum', subtitle: 'AI use and intent within each age group.', minimum: 350 },
       { id: 'trust', title: 'Trust across generations', subtitle: 'How confidence in AI accuracy varies by age.', minimum: 350, note: 'Neutral responses are split at the center for visual comparison.' },
-      { id: 'learning', title: 'AI learning across experience levels', subtitle: 'Share who learned to use AI-enabled tools, by years of work experience.', minimum: 340, note: 'Bubble size indicates the number of valid responses in each group.' },
+      { id: 'learning', title: 'AI learning across experience levels', subtitle: 'Share who learned to use AI-enabled tools, by years of work experience.', minimum: 340, note: 'Bubble size shows all respondents in each group. Percentages use valid AI-learning answers.' },
     ],
   },
   {
